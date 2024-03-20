@@ -9,19 +9,14 @@ namespace StarWarsApp.Controllers;
 [Route("[controller]")]
 public class PersonController : ControllerBase
 {
-    // private readonly StarWarsDbContext _context;
-    //
-    // public PersonController(StarWarsDbContext context)
-    // {
-    //     _context = context;
-    // }
-    // private PersonRepository personRepository;
+    private readonly StarWarsDbContext dbContext;
+    private readonly PersonRepository personRepository;
 
-    // public PersonController()
-    // {
-        // var dbContext = new StarWarsDbContext();
-        // this.personRepository = new PersonRepository(dbContext);
-    // }
+    public PersonController()
+    {
+        this.dbContext = new StarWarsDbContext();
+        this.personRepository = new PersonRepository(dbContext);
+    }
 
     [HttpPost]
     public async Task<IActionResult> CreatePerson(PersonDto personDto)
@@ -31,31 +26,36 @@ public class PersonController : ControllerBase
             Name = personDto.Name,
             Surname = personDto.Surname
         };
-        var dbContext = new StarWarsDbContext();
-        await dbContext.Database.EnsureCreatedAsync();
-        await dbContext.People.AddAsync(person);
-        await dbContext.SaveChangesAsync();
-        // this.personRepository = new PersonRepository(dbContext);
-        // await this.personRepository.AddPersonAsync(person);
-        return Ok();
+
+        await this.personRepository.AddPersonAsync(person);
+        return Ok(person);
     }
 
     [HttpGet]
-    public List<Person> GetPerson()
+    public ActionResult<Person> GetPerson(string personName)
     {
-        var person = new Person("Dawid", "Alibaba");
-        return new List<Person> { person };
+        var person = this.personRepository.GetPersonByName(personName);
+        return Ok(person);
     }
 
-    [HttpPut]
-    public IEnumerable<Person> UpdatePerson()
+    [HttpPut("{personId}")]
+    public async Task<IActionResult> UpdatePerson(int personId, PersonDto updatedPersonDto)
     {
-        return null;
+        var person = new Person
+        {
+            Name = updatedPersonDto.Name,
+            Surname = updatedPersonDto.Surname
+        };
+        
+        var updatedPerson = await this.personRepository.UpdatePersonAsync(personId, person);
+        
+        return Ok(updatedPerson);
     }
-    
-    [HttpDelete]
-    public IEnumerable<Person> DeletePerson()
+
+    [HttpDelete("{personId}")]
+    public async Task<IActionResult> DeletePerson(int personId)
     {
-        return null;
+        await this.personRepository.DeletePerson(personId);
+        return Ok();
     }
 }
