@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using StarWarsApp.Dtos;
+using StarWarsApp.Models;
 
 namespace StarWarsApp.Controllers;
 

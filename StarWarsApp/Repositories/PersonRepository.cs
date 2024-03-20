@@ -1,46 +1,30 @@
-using MySql.Data.MySqlClient;
-using StarWarsApp.Dtos;
+using StarWarsApp.Models;
 
-namespace StarWarsApp.Repositories;
-
-public class PersonRepository : IDisposable, IAsyncDisposable
+namespace StarWarsApp.Repositories
 {
-    private readonly string connectionString;
-    private MySqlCommand command;
-
-    public PersonRepository()
+    public class PersonRepository : IDisposable, IAsyncDisposable
     {
-        var server = "127.0.0.1";
-        var database = "starwarsdB";
-        var username = "root";
-        var password = "";
-        connectionString = $"Server={server};Database={database};Uid={username};Pwd={password};";
+        private readonly StarWarsDbContext dbContext;
+
+        public PersonRepository(StarWarsDbContext dbContext)
+        {
+            this.dbContext = dbContext;
+        }
         
-        var connection = new MySqlConnection(connectionString);
-        connection.Open();
-        this.command = connection.CreateCommand();
-    }
+        public async Task AddPersonAsync(Person person)
+        {
+            await this.dbContext.People.AddAsync(person);
+            await this.dbContext.SaveChangesAsync();
+        }
+        
+        public void Dispose()
+        {
+            dbContext.Dispose();
+        }
 
-    public void AddPerson(Person person)
-    {
-        this.command.CommandText = "INSERT INTO Person (Name, Surname) VALUES (@Name, @Surname)";
-        this.command.Parameters.AddWithValue("@Name", person.Name);
-        this.command.Parameters.AddWithValue("@Surname", person.Surname);
-        this.command.ExecuteNonQuery();
-    }
-    
-    public Person GetPerson(string surname)
-    {
-        this.command.
-    }
-
-    public void Dispose()
-    {
-        command.Dispose();
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await command.DisposeAsync();
+        public async ValueTask DisposeAsync()
+        {
+            await dbContext.DisposeAsync();
+        }
     }
 }

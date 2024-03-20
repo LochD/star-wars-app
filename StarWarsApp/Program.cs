@@ -6,6 +6,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+// builder.Services.AddDbContext<StarWarsDbContext>(
+//     options => options.UseSqlServer("name=ConnectionStrings:StarWarsDbConnection"));
 
 var app = builder.Build();
 

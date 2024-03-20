@@ -1,4 +1,4 @@
-namespace StarWarsApp.Dtos;
+namespace StarWarsApp.Models;
 
 public class StarShip
 {

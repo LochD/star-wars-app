@@ -9,7 +9,7 @@ namespace StarWarsApp.Clients
 
         public StarWarsClient()
         {
-            httpClient = new HttpClient();
+            this.httpClient = new HttpClient();
         }
 
         public async Task<List<string>> GetStarWarsersName()
