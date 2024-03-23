@@ -38,17 +38,10 @@ public class PersonController : ControllerBase
         return Ok(person);
     }
 
-    [HttpPut("{personId}")]
-    public async Task<IActionResult> UpdatePerson(int personId, PersonDto updatedPersonDto)
+    [HttpPut]
+    public async Task<IActionResult> UpdatePerson(int personId, Person person)
     {
-        var person = new Person
-        {
-            Name = updatedPersonDto.Name,
-            Surname = updatedPersonDto.Surname
-        };
-        
-        var updatedPerson = await this.personRepository.UpdatePersonAsync(personId, person);
-        
+        var updatedPerson = await this.personRepository.UpdatePersonAsync(person);
         return Ok(updatedPerson);
     }
 

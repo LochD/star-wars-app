@@ -16,19 +16,19 @@ namespace StarWarsApp.Repositories
             await this.dbContext.People.AddAsync(person);
             await this.dbContext.SaveChangesAsync();
         } 
-        public async Task<Person> UpdatePersonAsync(int personId, Person person)
+        public async Task<Person> UpdatePersonAsync(Person person)
         {
-            var personBeforeUpdate = GetPersonById(personId);
+            var personBeforeUpdate = GetPersonById(person.Id);
             personBeforeUpdate.Name = person.Name;
             personBeforeUpdate.Surname = person.Surname;
             await this.dbContext.SaveChangesAsync();
-            return GetPersonById(personId);
+            return GetPersonById(person.Id);
         }        
         
         public Person GetPersonByName(string personName)
         {
             return this.dbContext.People.FirstOrDefault(person => person.Name == personName);
-        }        
+        }              
         
         public async Task DeletePerson(int personId)
         {

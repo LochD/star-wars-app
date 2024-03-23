@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using StarWarsApp.Dtos;
 using StarWarsApp.Models;
+using StarWarsApp.Repositories;
 
 namespace StarWarsApp.Controllers;
 
@@ -8,29 +10,45 @@ namespace StarWarsApp.Controllers;
 [Route("[controller]")]
 public class StarShipController : ControllerBase
 {
-    
-    [HttpGet]
-    public IEnumerable<StarShip> GetPerson()
+    private readonly StarWarsDbContext dbContext;
+    private readonly StarShipRepository starShipRepository;
+
+    public StarShipController()
     {
-        var starShip = new StarShip("Luke star ship");
-        return new List<StarShip> { starShip };
+        this.dbContext = new StarWarsDbContext();
+        this.starShipRepository = new StarShipRepository(dbContext);
     }
-    
+
     [HttpPost]
-    public IEnumerable<StarShip> CreatePerson()
+    public async Task<IActionResult> CreateStarShip(StarShipDto starShipDto)
     {
-        return null;
+        var starShip = new StarShip
+        {
+            Name = starShipDto.Name
+        };
+        
+        await this.starShipRepository.AddStarShip(starShip);
+        return Ok(starShip);
+    }
+
+    [HttpGet]
+    public ActionResult<Person> GetStarShip(string starShipName)
+    {
+        var person = this.starShipRepository.GetStarShipByName(starShipName);
+        return Ok(person);
     }
     
     [HttpPut]
-    public IEnumerable<StarShip> UpdatePerson()
+    public async Task<IActionResult> UpdateStarShip(StarShip starShip)
     {
-        return null;
+        var updatedPerson = await this.starShipRepository.UpdateStarShip(starShip);
+        return Ok(updatedPerson);
     }
     
-    [HttpDelete]
-    public IEnumerable<StarShip> DeletePerson()
+    [HttpDelete("{starShipId}")]
+    public async Task<IActionResult> DeleteStarShip(int starShipId)
     {
-        return null;
+        await this.starShipRepository.DeleteStarShip(starShipId);
+        return Ok();
     }
 }

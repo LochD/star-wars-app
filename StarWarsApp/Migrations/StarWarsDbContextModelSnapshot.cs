@@ -36,6 +36,21 @@ namespace StarWarsApp.Migrations
 
                     b.ToTable("People");
                 });
+
+            modelBuilder.Entity("StarWarsApp.Models.StarShip", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StarShip");
+                });
 #pragma warning restore 612, 618
         }
     }
