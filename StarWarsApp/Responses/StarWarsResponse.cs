@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace StarWarsApp.Responses
 {
-    public class StarWarsersResponse
+    public class StarWarsResponse
     {
         public List<Character> results { get; set; }
     }
@@ -12,6 +12,6 @@ namespace StarWarsApp.Responses
         [JsonPropertyName("name")]
         public string Name { get; set; }
         [JsonPropertyName("starships")]
-        public string Starships { get; set; }
+        public List<string> Starships { get; set; }
     }
 }

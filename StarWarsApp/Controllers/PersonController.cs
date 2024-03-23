@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using StarWarsApp.Clients;
 using StarWarsApp.Dtos;
 using StarWarsApp.Models;
 using StarWarsApp.Repositories;
+using StarWarsApp.Services;
 
 namespace StarWarsApp.Controllers;
 
@@ -11,6 +13,8 @@ public class PersonController : ControllerBase
 {
     private readonly StarWarsDbContext dbContext;
     private readonly PersonRepository personRepository;
+    private readonly StarshipService _starshipService;
+    private readonly PersonService personService;
 
     public PersonController()
     {
@@ -21,10 +25,25 @@ public class PersonController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreatePerson(PersonDto personDto)
     {
+        if (await personService.IsPersonExistOnStarWars(personDto.Name))
+        {
+            var starShips = await _starshipService.GetPersonStarships(personDto.Name);
+            var personFromStarWars = new Person
+            {
+                Name = personDto.Name,
+                Surname = personDto.Surname,
+                Starships =  starShips
+            };
+            
+            await this.personRepository.AddPersonAsync(personFromStarWars);
+            return Ok(personFromStarWars);
+        }
+
         var person = new Person
         {
             Name = personDto.Name,
-            Surname = personDto.Surname
+            Surname = personDto.Surname,
+            Starships = personDto.Starships
         };
 
         await this.personRepository.AddPersonAsync(person);

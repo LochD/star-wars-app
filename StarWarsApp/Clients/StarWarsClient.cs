@@ -18,21 +18,36 @@ namespace StarWarsApp.Clients
             response.EnsureSuccessStatusCode();
 
             var responseBody = await response.Content.ReadAsStringAsync();
-            var starWarsers = JsonSerializer.Deserialize<StarWarsersResponse>(responseBody);
-            
-            if (starWarsers?.results != null)
+            var starWarsResponse = JsonSerializer.Deserialize<StarWarsResponse>(responseBody);
+
+            if (starWarsResponse?.results != null)
             {
-                List<string> listWithStarWarsersNames = starWarsers
+                List<string> listWithStarWarsersNames = starWarsResponse
                     .results
                     .Select(character => character.Name)
                     .ToList();
 
                 return listWithStarWarsersNames;
             }
-            else
-            {
-                return new List<string>();
-            }
+
+            return new List<string>();
+        }
+
+        public async Task<List<string>> GetStarWarserships(string starWarserName)
+        {
+            var response = await httpClient.GetAsync("https://swapi.dev/api/people");
+            response.EnsureSuccessStatusCode();
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var starWarsResponse = JsonSerializer.Deserialize<StarWarsResponse>(responseBody);
+
+            var characterWithNameFromParameter =
+                starWarsResponse.results.
+                    Where(character => character.Name == starWarserName)
+                    .FirstOrDefault();
+            var starShipsName = characterWithNameFromParameter.Starships;
+            
+            return starShipsName;
         }
     }
 }

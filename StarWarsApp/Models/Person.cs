@@ -9,7 +9,8 @@ public class Person
     [Required]
     public string Name { get; set; }
     [Required]
-    public string Surname { get; set; }
+    public string Surname { get; set; }    
+    public List<string> Starships { get; set; }
 
     public Person() { }
     
