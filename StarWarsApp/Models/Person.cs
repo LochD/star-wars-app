@@ -8,16 +8,13 @@ public class Person
     public int Id { get; set; }
     [Required]
     public string Name { get; set; }
-    [Required]
-    public string Surname { get; set; }
 
     public ICollection<StarShip> StarShips { get; set; } = new List<StarShip>();
 
     public Person() { }
     
-    public Person(string name, string surname)
+    public Person(string name)
     {
         this.Name = name;
-        this.Surname = surname;
     }
 }

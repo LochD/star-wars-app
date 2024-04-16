@@ -23,7 +23,6 @@ public class PersonController : ControllerBase
         var person = new Person
         {
             Name = personCreateRequest.Name,
-            Surname = personCreateRequest.Surname,
             StarShips = personCreateRequest.StarShips?
                 .Select(ss => new StarShip { Name = ss.Name })
                 .ToList() ?? new List<StarShip>()

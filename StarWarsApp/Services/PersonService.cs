@@ -1,4 +1,5 @@
 using StarWarsApp.Clients;
+using StarWarsApp.Exceptions;
 using StarWarsApp.Models;
 using StarWarsApp.Repositories;
 using StarWarsApp.Responses;
@@ -30,7 +31,6 @@ public class PersonService
             var personWithStarShipsFromStarWarsClient = new Person
             {
                 Name = person.Name,
-                Surname = person.Surname,
                 StarShips = mappedStarShipsList
             };
 
@@ -42,14 +42,13 @@ public class PersonService
             var newCreatedPerson = new Person
             {
                 Name = person.Name,
-                Surname = person.Surname,
                 StarShips = person.StarShips
             };
             
             return await this.personRepository.CreatePersonAsync(newCreatedPerson);
         }
 
-        throw new InvalidOperationException("Person already exists.");
+        throw new PersonExistException($"Person with name {person.Name} currently exist.");
     }
 
     public async Task DeletePerson(int personId)
@@ -63,18 +62,19 @@ public class PersonService
     {
         var personBeforeUpdate = GetPersonById(person.Id);
         personBeforeUpdate.Name = person.Name;
-        personBeforeUpdate.Surname = person.Surname;
         await this.dbContext.SaveChangesAsync();
         return GetPersonById(person.Id);
     }
     
     public Person GetPersonByName(string personName)
     {
-        return this.dbContext.People.FirstOrDefault(person => person.Name == personName) ?? throw new InvalidOperationException();
+        return this.dbContext.People.FirstOrDefault(person => person.Name == personName) ?? 
+               throw new PersonNotFoundException($"Person with name {personName} not exist");
     }              
     
     private Person GetPersonById(int personId)
     {
-        return this.dbContext.People.FirstOrDefault(person => person.Id == personId) ?? throw new InvalidOperationException();
+        return this.dbContext.People.FirstOrDefault(person => person.Id == personId) ?? 
+               throw new PersonNotFoundException($"Person with id {personId} not exist");
     }
 }
