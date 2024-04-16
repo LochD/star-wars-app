@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace StarWarsApp.Models;
 
-public class StarShip
+public class Starship
 {
     [Key]
     public int Id { get; set; }
@@ -13,10 +13,10 @@ public class StarShip
 
     // public Person Person { get; set; }
 
-    public StarShip(string name)
+    public Starship(string name)
     {
         this.Name = name;
     }
     
-    public StarShip() { }
+    public Starship() { }
 }

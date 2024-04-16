@@ -14,8 +14,23 @@ public class StarshipService
         this.starShipRepository = new StarshipRepository(dbContext);
     }
 
-    public Task<int> CreateStarShip(StarShip starShip)
+    public Task<int> CreateStarship(Starship starship)
     {
-        return this.starShipRepository.CreateStarShip(starShip);
+        return this.starShipRepository.CreateStarShip(starship);
     }
+    
+    public Starship GetStarshipByName(string starShipName)
+    {
+        return this.starShipRepository.GetStarshipByName(starShipName);
+    }
+    
+    public async Task<Starship> UpdateStarship(Starship starship)
+    {
+        return await this.starShipRepository.UpdateStarship(starship);
+    }
+    
+    public async Task DeleteStarship(int starShipId)
+    {
+        await this.starShipRepository.DeleteStarship(starShipId);
+    }    
 }

@@ -25,13 +25,13 @@ public class PersonService
         {
             var starShipsFromStarWarsClient = await this.starWarsClient.GetStarWarserShipsByPersonName(person.Name);
             var mappedStarShipsList = starShipsFromStarWarsClient
-                .Select(starshipName => new StarShip { Name = starshipName })
+                .Select(starshipName => new Starship { Name = starshipName })
                 .ToList();
 
             var personWithStarShipsFromStarWarsClient = new Person
             {
                 Name = person.Name,
-                StarShips = mappedStarShipsList
+                Starships = mappedStarShipsList
             };
 
             return await this.personRepository.CreatePersonAsync(personWithStarShipsFromStarWarsClient);
@@ -39,13 +39,16 @@ public class PersonService
 
         if (!await this.starWarsClient.IsPersonExist(person.Name))
         {
-            var newCreatedPerson = new Person
+            //TO DO: always while creating person starship is created and connected to that person
+            var newPerson = new Person
             {
                 Name = person.Name,
-                StarShips = person.StarShips
+                Starships = person.Starships?
+                    .Select(ss => new Starship { Name = ss.Name })
+                    .ToList() ?? new List<Starship>()
             };
             
-            return await this.personRepository.CreatePersonAsync(newCreatedPerson);
+            return await this.personRepository.CreatePersonAsync(newPerson);
         }
 
         throw new PersonExistException($"Person with name {person.Name} currently exist.");
@@ -53,28 +56,19 @@ public class PersonService
 
     public async Task DeletePerson(int personId)
     {
-        var personToDelete = GetPersonById(personId);
-        this.dbContext.People.Remove(personToDelete);
-        await this.dbContext.SaveChangesAsync();
+        await this.personRepository.DeletePerson(personId);
     }
     
     public async Task<Person> UpdatePersonAsync(Person person)
     {
-        var personBeforeUpdate = GetPersonById(person.Id);
+        var personBeforeUpdate = this.personRepository.GetPersonById(person.Id);
         personBeforeUpdate.Name = person.Name;
         await this.dbContext.SaveChangesAsync();
-        return GetPersonById(person.Id);
+        return this.personRepository.GetPersonById(person.Id);
     }
     
     public Person GetPersonByName(string personName)
     {
-        return this.dbContext.People.FirstOrDefault(person => person.Name == personName) ?? 
-               throw new PersonNotFoundException($"Person with name {personName} not exist");
-    }              
-    
-    private Person GetPersonById(int personId)
-    {
-        return this.dbContext.People.FirstOrDefault(person => person.Id == personId) ?? 
-               throw new PersonNotFoundException($"Person with id {personId} not exist");
+        return this.personRepository.GetPersonByName(personName);
     }
 }

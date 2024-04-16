@@ -23,9 +23,9 @@ public class PersonController : ControllerBase
         var person = new Person
         {
             Name = personCreateRequest.Name,
-            StarShips = personCreateRequest.StarShips?
-                .Select(ss => new StarShip { Name = ss.Name })
-                .ToList() ?? new List<StarShip>()
+            Starships = personCreateRequest.StarShips?
+                .Select(ss => new Starship { Name = ss.Name })
+                .ToList() ?? new List<Starship>()
         };
         
         var personCreatedResponse = await this.personService.CreatePerson(person);

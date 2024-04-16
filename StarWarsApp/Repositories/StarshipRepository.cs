@@ -11,14 +11,14 @@ public class StarshipRepository
         this.dbContext = dbContext;
     }
 
-    public async Task<int> CreateStarShip(StarShip starShip)
+    public async Task<int> CreateStarShip(Starship starship)
     {
-        await this.dbContext.StarShips.AddAsync(starShip);
+        await this.dbContext.StarShips.AddAsync(starship);
         await this.dbContext.SaveChangesAsync();
-        return starShip.Id;
+        return starship.Id;
     }
     
-    public async Task<List<int>> CreateStarShips(List<StarShip> starShips)
+    public async Task<List<int>> CreateStarShips(List<Starship> starShips)
     {
         List<int> starShipsIds = new List<int>();
         foreach (var starShip in starShips)
@@ -30,17 +30,17 @@ public class StarshipRepository
         return starShipsIds;
     }
 
-    public StarShip GetStarshipByName(string starShipName)
+    public Starship GetStarshipByName(string starShipName)
     {
-        return this.dbContext.StarShips.FirstOrDefault(starShip => starShip.Name == starShipName);
+        return this.dbContext.StarShips.FirstOrDefault(starShip => starShip.Name == starShipName) ?? throw new InvalidOperationException();
     }
 
-    public async Task<StarShip> UpdateStarship(StarShip starShip)
+    public async Task<Starship> UpdateStarship(Starship starship)
     {
-        var starShipBeforeUpdate = GetStarshipById(starShip.Id);
-        starShipBeforeUpdate.Name = starShip.Name;
+        var starShipBeforeUpdate = GetStarshipById(starship.Id);
+        starShipBeforeUpdate.Name = starship.Name;
         await this.dbContext.SaveChangesAsync();
-        return GetStarshipById(starShip.Id);
+        return GetStarshipById(starship.Id);
     }
 
     public async Task DeleteStarship(int starShipId)
@@ -50,7 +50,7 @@ public class StarshipRepository
         await this.dbContext.SaveChangesAsync();
     }    
     
-    private StarShip GetStarshipById(int id)
+    private Starship GetStarshipById(int id)
     {
         return this.dbContext.StarShips.FirstOrDefault(starShip => starShip.Id == id);
     }

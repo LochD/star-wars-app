@@ -8,12 +8,12 @@ public class PersonCreatedResponse
 
     public string Name { get; set; }
 
-    public ICollection<StarShip> StarShips { get; set; } = new List<StarShip>();
+    public ICollection<Starship> StarShips { get; set; } = new List<Starship>();
 
     public PersonCreatedResponse(Person person)
     {
         this.Id = person.Id;
         this.Name = person.Name;
-        this.StarShips = person.StarShips;
+        this.StarShips = person.Starships;
     }
 }

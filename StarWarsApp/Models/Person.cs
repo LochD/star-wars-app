@@ -9,7 +9,7 @@ public class Person
     [Required]
     public string Name { get; set; }
 
-    public ICollection<StarShip> StarShips { get; set; } = new List<StarShip>();
+    public ICollection<Starship> Starships { get; set; } = new List<Starship>();
 
     public Person() { }
     
