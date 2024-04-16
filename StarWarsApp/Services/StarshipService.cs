@@ -1,18 +1,21 @@
 using StarWarsApp.Clients;
+using StarWarsApp.Models;
+using StarWarsApp.Repositories;
 
 namespace StarWarsApp.Services;
 
 public class StarshipService
 {
-    private StarWarsClient starWarsClient;
-    
-    public StarshipService()
+    private readonly StarWarsDbContext dbContext;
+    private StarshipRepository starShipRepository;
+
+    public StarshipService(StarWarsDbContext dbContext)
     {
-        this.starWarsClient = new StarWarsClient();
+        this.starShipRepository = new StarshipRepository(dbContext);
     }
 
-    public async Task<List<string>> GetPersonStarships(string starWarserName)
+    public Task<int> CreateStarShip(StarShip starShip)
     {
-        return await this.starWarsClient.GetStarWarserships(starWarserName);
+        return this.starShipRepository.CreateStarShip(starShip);
     }
 }

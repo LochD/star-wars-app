@@ -11,15 +11,28 @@ public class StarshipRepository
         this.dbContext = dbContext;
     }
 
-    public async Task AddStarship(StarShip starShip)
+    public async Task<int> CreateStarShip(StarShip starShip)
     {
-        await this.dbContext.StarShip.AddAsync(starShip);
+        await this.dbContext.StarShips.AddAsync(starShip);
         await this.dbContext.SaveChangesAsync();
+        return starShip.Id;
+    }
+    
+    public async Task<List<int>> CreateStarShips(List<StarShip> starShips)
+    {
+        List<int> starShipsIds = new List<int>();
+        foreach (var starShip in starShips)
+        {
+            var id = await CreateStarShip(starShip);
+            starShipsIds.Add(id);
+        }
+
+        return starShipsIds;
     }
 
     public StarShip GetStarshipByName(string starShipName)
     {
-        return this.dbContext.StarShip.FirstOrDefault(starShip => starShip.Name == starShipName);
+        return this.dbContext.StarShips.FirstOrDefault(starShip => starShip.Name == starShipName);
     }
 
     public async Task<StarShip> UpdateStarship(StarShip starShip)
@@ -33,12 +46,12 @@ public class StarshipRepository
     public async Task DeleteStarship(int starShipId)
     {
         var starShipToDelete = GetStarshipById(starShipId);
-        dbContext.StarShip.Remove(starShipToDelete);
+        dbContext.StarShips.Remove(starShipToDelete);
         await this.dbContext.SaveChangesAsync();
-    }
+    }    
     
     private StarShip GetStarshipById(int id)
     {
-        return this.dbContext.StarShip.FirstOrDefault(starShip => starShip.Id == id);
+        return this.dbContext.StarShips.FirstOrDefault(starShip => starShip.Id == id);
     }
 }
