@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using StarWarsApp.Models;
+using StarWarsApp.Responses;
 
 namespace StarWarsApp.Repositories
 {
@@ -12,10 +13,11 @@ namespace StarWarsApp.Repositories
             this.dbContext = dbContext;
         }
         
-        public async Task CreatePersonAsync(Person person)
+        public async Task<PersonCreatedResponse> CreatePersonAsync(Person person)
         {
             await this.dbContext.People.AddAsync(person);
             await this.dbContext.SaveChangesAsync();
+            return new PersonCreatedResponse(person);
         }
         public async Task DeletePerson(int personId)
         {
@@ -41,8 +43,6 @@ namespace StarWarsApp.Repositories
         
         public async Task<bool> IsPersonExist(Person person)
         {
-            // return this.dbContext.People.Include(p => p.Name == person.Name).AnyAsync(p => p.Name == person.Name);
-            // return this.dbContext.People.Include(p => p.Name == person.Name).AnyAsync(p => p.Name == person.Name);
             return await dbContext.People.AnyAsync(p => p.Name == person.Name);
         }
         

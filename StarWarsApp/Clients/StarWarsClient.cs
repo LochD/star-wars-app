@@ -33,7 +33,7 @@ namespace StarWarsApp.Clients
             return new List<string>();
         }
 
-        public async Task<List<string>> GetStarWarserships(string starWarserName)
+        public async Task<List<string>> GetStarWarserShipsByPersonName(string starWarserName)
         {
             var response = await httpClient.GetAsync("https://swapi.dev/api/people");
             response.EnsureSuccessStatusCode();
@@ -48,6 +48,12 @@ namespace StarWarsApp.Clients
             var starShipsName = characterWithNameFromParameter.Starships;
             
             return starShipsName;
+        }
+
+        public async Task<bool> IsPersonExist(string personName)
+        {
+            var starWarsersNames = await GetStarWarsersName();
+            return starWarsersNames.Select(name => name.Equals(personName)).Any(equals => equals);
         }
     }
 }

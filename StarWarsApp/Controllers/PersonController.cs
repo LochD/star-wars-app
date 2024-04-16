@@ -24,18 +24,13 @@ public class PersonController : ControllerBase
         {
             Name = personCreateRequest.Name,
             Surname = personCreateRequest.Surname,
-            StarShips = new List<StarShip>()
+            StarShips = personCreateRequest.StarShips?
+                .Select(ss => new StarShip { Name = ss.Name })
+                .ToList() ?? new List<StarShip>()
         };
-
-        List<StarShipCreateRequest> starShips = personCreateRequest.StarShips;
         
-        foreach (var starShipCreateRequest in starShips)
-        {
-            person.StarShips.Add(new StarShip { Name = starShipCreateRequest.Name });
-        }
-        
-        await this.personService.CreatePerson(person);
-        return Ok(person);
+        var personCreatedResponse = await this.personService.CreatePerson(person);
+        return Ok(personCreatedResponse);
     }
 
     [HttpGet]

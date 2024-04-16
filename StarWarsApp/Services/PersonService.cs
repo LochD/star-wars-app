@@ -1,6 +1,7 @@
 using StarWarsApp.Clients;
 using StarWarsApp.Models;
 using StarWarsApp.Repositories;
+using StarWarsApp.Responses;
 
 namespace StarWarsApp.Services;
 
@@ -9,65 +10,34 @@ public class PersonService
     private readonly StarWarsDbContext dbContext;
     private StarWarsClient starWarsClient;
     private PersonRepository personRepository;
-    private StarshipService starShipService;
 
     public PersonService(StarWarsDbContext dbContext)
     {
         this.dbContext = dbContext;
         this.starWarsClient = new StarWarsClient();
         this.personRepository = new PersonRepository(this.dbContext);
-        this.starShipService = new StarshipService(this.dbContext);
-    }
-
-    public async Task<bool> IsPersonExistOnStarWars(string personName)
-    {
-        var starWarsersNames = await this.starWarsClient.GetStarWarsersName();
-
-        foreach (var name in starWarsersNames)
-        {
-            var equals = name.Equals(personName);
-            if (equals)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
     
-    public async Task CreatePerson(Person person)
+    public async Task<PersonCreatedResponse> CreatePerson(Person person)
     {
-        if (await this.personRepository.IsPersonExist(person))
+        if (await this.starWarsClient.IsPersonExist(person.Name) && !await this.personRepository.IsPersonExist(person))
         {
-            return;
-        }
+            var starShipsFromStarWarsClient = await this.starWarsClient.GetStarWarserShipsByPersonName(person.Name);
+            var mappedStarShipsList = starShipsFromStarWarsClient
+                .Select(starshipName => new StarShip { Name = starshipName })
+                .ToList();
 
-        if (await IsPersonExistOnStarWars(person.Name) && !await this.personRepository.IsPersonExist(person))
-        {
-            List<string> starships = await this.starWarsClient.GetStarWarserships(person.Name);
-
-            var createdStarShips = new List<StarShip>();
-            foreach (string starshipName in starships)
-            {
-                var starship = new StarShip
-                {
-                    Name = starshipName,
-                };
-                createdStarShips.Add(starship);
-            }
-
-            var newCreatedPerson = new Person
+            var personWithStarShipsFromStarWarsClient = new Person
             {
                 Name = person.Name,
                 Surname = person.Surname,
-                StarShips = createdStarShips
+                StarShips = mappedStarShipsList
             };
 
-            await this.personRepository.CreatePersonAsync(newCreatedPerson);
-            return;
+            return await this.personRepository.CreatePersonAsync(personWithStarShipsFromStarWarsClient);
         }
 
-        if (!await IsPersonExistOnStarWars(person.Name))
+        if (!await this.starWarsClient.IsPersonExist(person.Name))
         {
             var newCreatedPerson = new Person
             {
@@ -76,8 +46,10 @@ public class PersonService
                 StarShips = person.StarShips
             };
             
-            await this.personRepository.CreatePersonAsync(newCreatedPerson);
+            return await this.personRepository.CreatePersonAsync(newCreatedPerson);
         }
+
+        throw new InvalidOperationException("Person already exists.");
     }
 
     public async Task DeletePerson(int personId)
@@ -98,11 +70,11 @@ public class PersonService
     
     public Person GetPersonByName(string personName)
     {
-        return this.dbContext.People.FirstOrDefault(person => person.Name == personName);
+        return this.dbContext.People.FirstOrDefault(person => person.Name == personName) ?? throw new InvalidOperationException();
     }              
     
     private Person GetPersonById(int personId)
     {
-        return this.dbContext.People.FirstOrDefault(person => person.Id == personId);
+        return this.dbContext.People.FirstOrDefault(person => person.Id == personId) ?? throw new InvalidOperationException();
     }
 }
